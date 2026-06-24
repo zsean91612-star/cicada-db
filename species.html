@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>台灣蟬物種圖鑑</title>
+<style>
+  :root {
+    --bg: #fdf8f0;
+    --card-bg: #fff;
+    --accent: #b8860b;
+    --accent-light: #fff8e1;
+    --accent2: #7b5800;
+    --text: #3e2c00;
+    --muted: #8a7560;
+    --border: #e0d4b0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system,"Noto Sans TC",sans-serif; background:var(--bg); color:var(--text); }
+
+  header {
+    background: var(--accent); color: white;
+    padding: 1rem 1.5rem;
+    display: flex; align-items: center; gap: 1.5rem;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  }
+  header h1 { font-size: 1.15rem; font-weight: 700; }
+  header .subtitle { font-size: .78rem; opacity: .8; }
+  nav.header-nav { margin-left: auto; display: flex; gap: .8rem; }
+  nav.header-nav a {
+    color: rgba(255,255,255,.85); text-decoration: none;
+    font-size: .85rem; padding: .25rem .7rem;
+    border-radius: 999px; border: 1px solid rgba(255,255,255,.4);
+    transition: background .15s;
+  }
+  nav.header-nav a:hover, nav.header-nav a.active { background: rgba(255,255,255,.2); color: white; }
+  .save-btn {
+    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.5);
+    color: white; padding: .28rem .85rem; border-radius: 999px;
+    font-size: .82rem; cursor: pointer; transition: background .15s;
+  }
+  .save-btn:hover { background: rgba(255,255,255,.3); }
+  .save-toast {
+    position: fixed; bottom: 1.2rem; right: 1.2rem;
+    background: #b8860b; color: white; padding: .6rem 1.1rem;
+    border-radius: 8px; font-size: .85rem; display: none;
+    box-shadow: 0 3px 10px rgba(0,0,0,.2); z-index: 999;
+  }
+
+  .layout { display: flex; }
+  aside {
+    width: 220px; min-width: 220px;
+    background: var(--card-bg); border-right: 1px solid var(--border);
+    padding: 1rem .8rem;
+    height: calc(100vh - 58px); overflow-y: auto;
+    position: sticky; top: 58px;
+  }
+  aside h2 { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: .5rem; }
+  .sp-nav-list { list-style: none; }
+  .sp-nav-list li a {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: .3rem .5rem; border-radius: 6px;
+    text-decoration: none; color: var(--text); font-size: .85rem;
+    transition: background .12s;
+  }
+  .sp-nav-list li a:hover { background: var(--accent-light); }
+  .sp-nav-list li a.active { background: var(--accent); color: white; }
+  .sp-nav-list li a .cnt {
+    font-size: .72rem; background: rgba(0,0,0,.08);
+    border-radius: 999px; padding: .05rem .4rem;
+  }
+  .sp-nav-list li a.active .cnt { background: rgba(255,255,255,.25); }
+
+  main { flex: 1; padding: 1.2rem; overflow-y: auto; }
+
+  .sp-section {
+    background: var(--card-bg);
+    border-radius: 12px; border: 1px solid var(--border);
+    margin-bottom: 2rem; overflow: hidden;
+    scroll-margin-top: 70px;
+  }
+  .sp-header {
+    padding: 1.2rem 1.4rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 1rem; align-items: flex-start;
+  }
+  .sp-name { font-size: 1.5rem; font-weight: 700; color: var(--accent2); }
+  .sp-latin { font-size: .9rem; color: var(--muted); font-style: italic; margin-top: .15rem; }
+  .sp-badges { display: flex; gap: .5rem; margin-top: .5rem; flex-wrap: wrap; }
+  .badge {
+    display: inline-block; padding: .15rem .55rem;
+    border-radius: 999px; font-size: .72rem;
+    background: var(--accent-light); color: var(--accent2);
+    border: 1px solid #e0c060;
+  }
+  .sp-count-badge {
+    margin-left: auto; text-align: right; white-space: nowrap;
+    font-size: .85rem; color: var(--muted);
+    min-width: 70px;
+  }
+  .sp-count-badge strong { display: block; font-size: 1.8rem; color: var(--accent); }
+
+  .sp-gallery {
+    display: flex; gap: 4px; overflow-x: auto;
+    padding: 0; background: #111;
+    max-height: 280px;
+  }
+  .sp-gallery img {
+    height: 260px; width: auto;
+    object-fit: cover; flex-shrink: 0;
+    cursor: pointer;
+  }
+  .no-photo {
+    display: flex; align-items: center; justify-content: center;
+    height: 140px; background: var(--accent-light);
+    font-size: 3rem;
+  }
+
+  .sp-body { padding: 1.2rem 1.4rem; display: flex; flex-direction: column; gap: 1.4rem; }
+  .sp-section-label {
+    font-size: .7rem; text-transform: uppercase; letter-spacing: .07em;
+    color: var(--muted); margin-bottom: .6rem; font-weight: 700;
+    display: flex; align-items: center; gap: .35rem;
+  }
+
+  .my-note {
+    width: 100%; min-height: 90px;
+    padding: .75rem 1rem;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    font-family: inherit; font-size: .9rem; line-height: 1.7;
+    color: var(--text); background: #fdfaf5;
+    resize: vertical; transition: border-color .15s, box-shadow .15s;
+  }
+  .my-note:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(184,134,11,.1); background: white;
+  }
+  .my-note::placeholder { color: #c4b08a; }
+
+  .notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: .55rem;
+  }
+  .note-item {
+    padding: .6rem .85rem; border-radius: 8px;
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    font-size: .85rem; line-height: 1.65; color: var(--text);
+  }
+  .no-notes { font-size: .85rem; color: var(--muted); font-style: italic; }
+
+  .loc-tags { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .loc-tag {
+    display: inline-flex; align-items: center; gap: .25rem;
+    padding: .22rem .65rem;
+    background: white; border: 1px solid var(--border);
+    border-radius: 999px; font-size: .8rem; color: var(--text);
+  }
+  .loc-tag::before { content: "📍"; font-size: .75rem; }
+
+  .records-row { display: flex; gap: .5rem; overflow-x: auto; padding-bottom: .5rem; }
+  .records-row::-webkit-scrollbar { height: 4px; }
+  .records-row::-webkit-scrollbar-track { background: var(--bg); border-radius: 2px; }
+  .records-row::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .rec-mini {
+    min-width: 120px; max-width: 120px; flex-shrink: 0;
+    border: 1px solid var(--border); border-radius: 8px;
+    overflow: hidden; background: white;
+    text-decoration: none; color: var(--text); display: block;
+    transition: box-shadow .12s, transform .12s;
+  }
+  .rec-mini:hover { box-shadow: 0 3px 10px rgba(0,0,0,.13); transform: translateY(-1px); }
+  .rec-mini img { width: 100%; height: 78px; object-fit: cover; display: block; }
+  .rec-mini-noimg { width: 100%; height: 78px; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+  .rec-mini-body { padding: .38rem .45rem; font-size: .71rem; color: var(--muted); }
+  .rec-mini-body strong { display: block; color: var(--text); margin-bottom: .1rem; font-size: .76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  #lb { display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:500;
+        justify-content:center; align-items:center; }
+  #lb.open { display:flex; }
+  #lb img { max-width:92vw; max-height:90vh; border-radius:6px; object-fit:contain; }
+  #lb-close { position:fixed; top:1rem; right:1.2rem; color:white; font-size:2rem; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🎵 台灣蟬物種圖鑑</h1>
+    <div class="subtitle">Facebook 蟬社團野外觀察紀錄</div>
+  </div>
+  <nav class="header-nav">
+    <a href="index.html">野外觀察紀錄</a>
+    <a href="species.html" class="active">物種圖鑑</a>
+    <button class="save-btn" onclick="exportNotes()">💾 儲存筆記</button>
+  </nav>
+</header>
+<div class="save-toast" id="toast">✅ species_notes.json 已下載，放到 data/ 資料夾後重新 build 即可永久儲存</div>
+
+<div class="layout">
+  <aside>
+    <h2>物種列表</h2>
+    <ul class="sp-nav-list" id="sp-nav"></ul>
+  </aside>
+  <main id="main-content"></main>
+</div>
+
+<div id="lb" onclick="closeLb()">
+  <span id="lb-close">✕</span>
+  <img id="lb-img" src="" alt="">
+</div>
+
+<script>
+const SPECIES = [{"name": "台灣騷蟬", "latin": "", "family": "", "note": "", "count": 25, "locations": ["陽明山", "天母古道", "滿月圓", "坪頂古圳"], "photos": ["27093133653658481/e01b4f5e2b44638b.jpg", "27092462230392290/1509675bd77bc142.jpg", "26746868668284983/7fd4cd7aabf26921.jpg", "26746868668284983/80123fed31e99757.jpg", "24145897841715425/e73afc1ae1d2f374.jpg", "23974681055503772/62b636bfdfd1ab2f.jpg"], "notes": [], "records": [{"post_id": "27093133653658481", "author": "林美惠", "text_preview": "林美惠的貼文", "location": "", "img": "27093133653658481/e01b4f5e2b44638b.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/27093133653658481"}, {"post_id": "27092462230392290", "author": "林美惠", "text_preview": "林美惠的貼文", "location": "", "img": "27092462230392290/1509675bd77bc142.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/27092462230392290"}, {"post_id": "26746868668284983", "author": "Steven Su", "text_preview": "請教蟬名? 20260523 @ 陽明山", "location": "陽明山", "img": "26746868668284983/7fd4cd7aabf26921.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/26746868668284983"}, {"post_id": "24145897841715425", "author": "末禪", "text_preview": "末禪的貼文", "location": "", "img": "24145897841715425/e73afc1ae1d2f374.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24145897841715425"}, {"post_id": "23974681055503772", "author": "羅美玲", "text_preview": "羅美玲的貼文", "location": "", "img": "23974681055503772/62b636bfdfd1ab2f.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/23974681055503772"}, {"post_id": "10030720823659697", "author": "林俊儒", "text_preview": "請教這兩隻物種名", "location": "", "img": "10030720823659697/7a8019ae696936b4.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/10030720823659697"}, {"post_id": "10041178762613903", "author": "林美惠", "text_preview": "林美惠的貼文", "location": "", "img": "10041178762613903/21d11b438de16c6f.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/10041178762613903"}, {"post_id": "9983487298383050", "author": "加藤貴也", "text_preview": "加藤貴也的貼文", "location": "", "img": "9983487298383050/6b46d0010c368b0b.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9983487298383050"}, {"post_id": "9905622002836247", "author": "余承恩", "text_preview": "請問什麼蟬聲音超大", "location": "", "img": "9905622002836247/201baf2df82c03fe.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9905622002836247"}, {"post_id": "9894832477248533", "author": "郭丁文", "text_preview": "郭丁文的貼文", "location": "", "img": "9894832477248533/d0408ba66bfde250.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9894832477248533"}, {"post_id": "9886902128041568", "author": "蔡蜻", "text_preview": "蔡蜻的貼文", "location": "", "img": "9886902128041568/66e0776fee07fd6f.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9886902128041568"}, {"post_id": "9790412101023905", "author": "蔡蜻", "text_preview": "蔡蜻的貼文", "location": "", "img": "9790412101023905/1377ea69e08cd165.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9790412101023905"}, {"post_id": "9772742566124192", "author": "Steven Su", "text_preview": "請教蟬名? 20250530 @ 天母古道", "location": "天母古道", "img": "9772742566124192/f65e63c107102a42.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9772742566124192"}, {"post_id": "9123370044394784", "author": "李志穎", "text_preview": "李志穎的貼文", "location": "", "img": "9123370044394784/410e6e730644ff46.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9123370044394784"}, {"post_id": "8166455386752926", "author": "Stella Kao", "text_preview": "台灣騷蟬(雌)", "location": "", "img": "8166455386752926/b0742832574f2cbb.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/8166455386752926"}, {"post_id": "8084041641660968", "author": "葉默", "text_preview": "葉默的貼文", "location": "", "img": "8084041641660968/9437250150586d87.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/8084041641660968"}, {"post_id": "7983182098413590", "author": "Tasman Liu", "text_preview": "滿月圓的蟬-臺灣騷蟬", "location": "滿月圓", "img": "7983182098413590/348ae3cbd8b6e691.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7983182098413590"}, {"post_id": "7856596924405442", "author": "楊婷如", "text_preview": "楊婷如的貼文", "location": "", "img": "7856596924405442/fa30fdc0b15e8799.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7856596924405442"}, {"post_id": "7811536288911506", "author": "陳榮章", "text_preview": "陳榮章的貼文", "location": "", "img": "7811536288911506/663a8dd1f7b060b2.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7811536288911506"}, {"post_id": "7754727554592380", "author": "許家禎", "text_preview": "許家禎的貼文", "location": "", "img": "7754727554592380/e94e185e4761dc18.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7754727554592380"}]}, {"name": "高砂熊蟬", "latin": "Cryptotympana holsti", "family": "蟬科 Cicadidae", "note": "台灣中低海拔常見大型蟬", "count": 16, "locations": ["陽明山遊客中心", "南港國家生技園區"], "photos": ["27053421717629675/dd6f92044b11caa1.jpg", "26883063727998809/7271058a1f3313f5.jpg", "24825052527133283/ec31f44d8723e5d6.jpg", "24382784641360076/244792c78e64a726.jpg", "24170344492604093/3fbb15b9ec0af478.jpg", "10045150348883411/bdde249518e69439.jpg"], "notes": ["這是熊蟬屬的蟬，但在羽化期間的色彩很難區分。我認為是紅脈熊蟬或是高砂熊蟬？", "這隻蟬似乎在羽化過程中因某種原因無法從殼中脫出。也就是說，這是一隻羽化失敗的個體。高砂熊蟬？", "看起來外側粗的翅脈偏綠色，應該是高砂熊蟬沒錯"], "records": [{"post_id": "27053421717629675", "author": "平凡", "text_preview": "平凡的貼文", "location": "", "img": "27053421717629675/dd6f92044b11caa1.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/27053421717629675"}, {"post_id": "26883063727998809", "author": "郭雅玲", "text_preview": "郭雅玲的貼文", "location": "", "img": "26883063727998809/7271058a1f3313f5.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/26883063727998809"}, {"post_id": "24825052527133283", "author": "張森博", "text_preview": "張森博的貼文", "location": "", "img": "24825052527133283/ec31f44d8723e5d6.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24825052527133283"}, {"post_id": "24382784641360076", "author": "張君基", "text_preview": "張君基的貼文", "location": "", "img": "24382784641360076/244792c78e64a726.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24382784641360076"}, {"post_id": "24170344492604093", "author": "張君基", "text_preview": "張君基的貼文", "location": "", "img": "24170344492604093/3fbb15b9ec0af478.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24170344492604093"}, {"post_id": "10045150348883411", "author": "張君基", "text_preview": "張君基的貼文", "location": "", "img": "10045150348883411/bdde249518e69439.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/10045150348883411"}, {"post_id": "8714944231904036", "author": "楊宇助", "text_preview": "楊宇助的貼文", "location": "", "img": "8714944231904036/c1db8c0671d09cbb.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/8714944231904036"}, {"post_id": "8129009700497495", "author": "Stella Kao", "text_preview": "請問這是高砂熊蟬嗎？", "location": "", "img": "8129009700497495/268a2558c53435ed.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/8129009700497495"}, {"post_id": "8013820302016436", "author": "Jane Lee", "text_preview": "#高砂熊蟬@陽明山遊客中心", "location": "陽明山遊客中心", "img": "8013820302016436/7e6ccd9736a6d7ea.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/8013820302016436"}, {"post_id": "7974800392585094", "author": "黃秀娥", "text_preview": "黃秀娥的貼文", "location": "", "img": "7974800392585094/5f75898bc69dc25d.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7974800392585094"}, {"post_id": "7809908535740948", "author": "林憲謄", "text_preview": "林憲謄的貼文", "location": "", "img": "7809908535740948/687ddcf469789bbc.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7809908535740948"}, {"post_id": "7770903556308113", "author": "Sam Hsieh", "text_preview": "請問這是高砂熊蟬的雌蟲嗎?113.7.17南港國家生技園區", "location": "南港國家生技園區", "img": "7770903556308113/f5aad0d8f37b4962.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7770903556308113"}, {"post_id": "7765563193508816", "author": "謝智偉", "text_preview": "謝智偉的貼文", "location": "", "img": "7765563193508816/0aaa10c78bbb1ec9.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7765563193508816"}, {"post_id": "7663093380422465", "author": "張憶如", "text_preview": "張憶如的貼文", "location": "", "img": "7663093380422465/9ae454f303efe276.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7663093380422465"}, {"post_id": "7633444390054031", "author": "朱麗莉", "text_preview": "朱麗莉的貼文", "location": "", "img": "7633444390054031/3f71f3677fe183e3.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7633444390054031"}, {"post_id": "7630196737045463", "author": "加藤貴也", "text_preview": "加藤貴也的貼文", "location": "", "img": "7630196737045463/bf3b75b1db9cac72.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7630196737045463"}]}, {"name": "台灣姬蟬", "latin": "", "family": "", "note": "", "count": 15, "locations": ["安康森林公園", "台灣大學", "南港國家生技園區", "屏東來義", "虎頭山"], "photos": ["27016853644619816/b14ce2385229d8d2.jpg", "26931491026489412/c6e377e7c657281a.jpg", "25066898722948661/607a73ea25c677a5.jpg", "24635991629372708/d633297fa8ea1a4a.jpg", "24417910067847533/e3c183f1c3c61b7a.jpg", "24118658321106044/57a9a78fc6992abf.jpg"], "notes": [], "records": [{"post_id": "27016853644619816", "author": "Steven Su", "text_preview": "請教是台灣姬蟬?", "location": "", "img": "27016853644619816/b14ce2385229d8d2.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/27016853644619816"}, {"post_id": "26931491026489412", "author": "Steven Su", "text_preview": "請教是台灣姬蟬? 20260607 @ 安康森林公園", "location": "安康森林公園", "img": "26931491026489412/c6e377e7c657281a.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/26931491026489412"}, {"post_id": "25066898722948661", "author": "李潛龍", "text_preview": "李潛龍的貼文", "location": "", "img": "25066898722948661/607a73ea25c677a5.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/25066898722948661"}, {"post_id": "24635991629372708", "author": "邱麗卿", "text_preview": "邱麗卿的貼文", "location": "", "img": "24635991629372708/d633297fa8ea1a4a.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24635991629372708"}, {"post_id": "24417910067847533", "author": "Tasman Liu", "text_preview": "請教蟬名", "location": "", "img": "24417910067847533/e3c183f1c3c61b7a.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24417910067847533"}, {"post_id": "24118658321106044", "author": "Cs的生態筆記", "text_preview": "Cs的生態筆記的貼文", "location": "", "img": "24118658321106044/57a9a78fc6992abf.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24118658321106044"}, {"post_id": "9850384888359959", "author": "Typhoon Cicada Lee", "text_preview": "中午羽化之 #臺灣姬蟬 (雄)— 在國立臺灣大學 National Taiwan University 。", "location": "台灣大學", "img": "9850384888359959/747cd604653c5024.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9850384888359959"}, {"post_id": "9778774888854293", "author": "羅美玲", "text_preview": "羅美玲的貼文", "location": "", "img": "9778774888854293/87c05cf63bba73a7.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9778774888854293"}, {"post_id": "8406945859370543", "author": "Sam Hsieh", "text_preview": "請問這是甚麼蟬?111.7.15南港國家生技園區", "location": "南港國家生技園區", "img": "8406945859370543/9a7e2323e791674f.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/8406945859370543"}, {"post_id": "8073771812687951", "author": "Louis Chung", "text_preview": "屏東來義", "location": "屏東來義", "img": "8073771812687951/accc7b83eaa925e8.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/8073771812687951"}, {"post_id": "7655181971213606", "author": "Biubiu Lin", "text_preview": "小孩今天出門走步道，回程撿到的蟬，請問這是什麼蟬呢？", "location": "", "img": "7655181971213606/1eeb96980c87f9ce.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7655181971213606"}, {"post_id": "7635818286483308", "author": "黃秀娥", "text_preview": "黃秀娥的貼文", "location": "", "img": "7635818286483308/db03c74aaee6cbd6.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7635818286483308"}, {"post_id": "7633455503386253", "author": "朱麗莉", "text_preview": "朱麗莉的貼文", "location": "", "img": "7633455503386253/d62d05d37f6b57ee.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7633455503386253"}, {"post_id": "7633195933412210", "author": "羅美玲", "text_preview": "羅美玲的貼文", "location": "虎頭山", "img": "7633195933412210/79717097f34b9a1c.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7633195933412210"}, {"post_id": "7604486339616503", "author": "羅美玲", "text_preview": "羅美玲的貼文", "location": "", "img": "7604486339616503/fb7f550df0b8ce55.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7604486339616503"}]}, {"name": "暮蟬屬", "latin": "", "family": "", "note": "", "count": 11, "locations": ["新北熊空山區", "福山植物園", "下巴陵", "杉林溪"], "photos": ["26884130401225475/e1902c96992df64a.jpg", "23971167709188440/52969bdf17d8720c.jpg", "23874605965511282/9c2576ef3ba8188a.jpg", "23874605965511282/b2a3c54f55f71c5e.jpg", "10029837170414729/6d9b2643d9430e21.jpg", "9887426961322418/fa69b27c86f27930.jpg"], "notes": [], "records": [{"post_id": "26884130401225475", "author": "陳榮章", "text_preview": "陳榮章的貼文", "location": "", "img": "26884130401225475/e1902c96992df64a.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/26884130401225475"}, {"post_id": "23971167709188440", "author": "Jelly Wang", "text_preview": "請問這隻是陽明山暮蟬？大坪暮蟬？", "location": "", "img": "23971167709188440/52969bdf17d8720c.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/23971167709188440"}, {"post_id": "23874605965511282", "author": "Rigo Chang", "text_preview": "2025 07攝於新北熊空山區，請教是何種暮蟬? 有可能是小暮蟬嗎?", "location": "新北熊空山區", "img": "23874605965511282/9c2576ef3ba8188a.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/23874605965511282"}, {"post_id": "10029837170414729", "author": "陳榮章", "text_preview": "陳榮章的貼文", "location": "", "img": "10029837170414729/6d9b2643d9430e21.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/10029837170414729"}, {"post_id": "9887426961322418", "author": "邱麗卿", "text_preview": "邱麗卿的貼文", "location": "福山植物園", "img": "9887426961322418/fa69b27c86f27930.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9887426961322418"}, {"post_id": "9754918747906574", "author": "羅美玲", "text_preview": "羅美玲的貼文", "location": "", "img": "9754918747906574/ee57bd5560e0c489.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9754918747906574"}, {"post_id": "7796358170429318", "author": "匿名成員", "text_preview": "請問是阿里山紋翅暮蟬嗎", "location": "下巴陵", "img": "7796358170429318/4b3e5ce4cc15baaa.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7796358170429318"}, {"post_id": "7790929144305554", "author": "簡俊哲", "text_preview": "簡俊哲的貼文", "location": "", "img": "7790929144305554/20275e9ac9248032.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7790929144305554"}, {"post_id": "7786894864708982", "author": "翠林", "text_preview": "翠林的貼文", "location": "杉林溪", "img": "7786894864708982/429d0d4037107dd8.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7786894864708982"}, {"post_id": "7774215649310237", "author": "劉樂山", "text_preview": "劉樂山的貼文", "location": "", "img": "7774215649310237/7f31aa1f13abe4dc.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7774215649310237"}, {"post_id": "7623527884379015", "author": "Dai Yi Lian", "text_preview": "右圖則是因為蟬跟背景顏色太接近無法拍得很清楚", "location": "", "img": "7623527884379015/faec7198e81a4886.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7623527884379015"}]}, {"name": "薄翅蟬", "latin": "Chremistica spp.", "family": "蟬科 Cicadidae", "note": "翅膀薄而透明，體型中等", "count": 10, "locations": [], "photos": ["24201155656189643/d25aea6be66cfe2f.jpg", "24168060096165866/9fa71828af59ebf9.jpg", "23912288605076351/6a9be8b9180de0bc.jpg", "23912288605076351/cc8ba5462361f128.jpg", "23894085153563363/9abc82afd1220b3e.jpg", "10041169115948201/baf32c46bef968bb.jpg"], "notes": ["薄翅蟬 成蟲會隨日齡由綠色轉為褐色", "這似乎是薄翅蟬和其他種類（高砂熊蟬？）的蟬鳴聲混合在一起的感覺。", "王宏進 請教一下，薄翅蟬 好像分 綠色型、褐色型，並非因為 剛羽化 和 最後定色？", "劉樂山 有夥伴說頭部最寬，是否僅有薄翅蟬符合呢？"], "records": [{"post_id": "24201155656189643", "author": "Stella Kao", "text_preview": "請問這是什麼蟬？", "location": "", "img": "24201155656189643/d25aea6be66cfe2f.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24201155656189643"}, {"post_id": "24168060096165866", "author": "陳筱愉", "text_preview": "陳筱愉的貼文", "location": "", "img": "24168060096165866/9fa71828af59ebf9.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24168060096165866"}, {"post_id": "23912288605076351", "author": "張憶如", "text_preview": "我確定小蟬殼是這位蟬先生的", "location": "", "img": "23912288605076351/6a9be8b9180de0bc.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/23912288605076351"}, {"post_id": "23894085153563363", "author": "Cs的生態筆記", "text_preview": "請問是薄翅蟬的聲音嗎?", "location": "", "img": "23894085153563363/9abc82afd1220b3e.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/23894085153563363"}, {"post_id": "10041169115948201", "author": "林美惠", "text_preview": "林美惠的貼文", "location": "", "img": "10041169115948201/baf32c46bef968bb.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/10041169115948201"}, {"post_id": "10015185941879852", "author": "Cs的生態筆記", "text_preview": "Cs的生態筆記的貼文", "location": "", "img": "10015185941879852/3a7d29bfcbe9716c.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/10015185941879852"}, {"post_id": "9902730289792085", "author": "Jay Lin", "text_preview": "夜晚被門口的電燈吸引來的，", "location": "", "img": "9902730289792085/5e4c387a1a8573f5.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9902730289792085"}, {"post_id": "7943641715700962", "author": "詹寶玉", "text_preview": "詹寶玉的貼文", "location": "", "img": "7943641715700962/86220b92942377e5.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7943641715700962"}, {"post_id": "7803732779691857", "author": "蘇貴福", "text_preview": "蘇貴福的貼文", "location": "", "img": "7803732779691857/446684bf9796d906.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7803732779691857"}, {"post_id": "7655233411208462", "author": "林憲謄", "text_preview": "林憲謄的貼文", "location": "", "img": "7655233411208462/8f96f7d92f67c75a.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7655233411208462"}]}, {"name": "小蟪蛄", "latin": "", "family": "", "note": "", "count": 10, "locations": ["陽明山", "大直明水公園"], "photos": ["10095708607160918/2ae83d47921f866e.jpg", "9971985599533220/bf7f0330af6080d1.jpg", "9965739366824510/5ebb345eeaa04209.jpg", "9965739366824510/8d0d5e13486193b9.jpg", "9926464077418706/b020b44b1ea47561.jpg", "8539694119429049/b9deb67de22d4885.jpg"], "notes": [], "records": [{"post_id": "10095708607160918", "author": "Jelly Wang", "text_preview": "請問牠是小蟪蛄嗎？ #小蟪蛄", "location": "", "img": "10095708607160918/2ae83d47921f866e.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/10095708607160918"}, {"post_id": "9971985599533220", "author": "李程硯", "text_preview": "李程硯的貼文", "location": "", "img": "9971985599533220/bf7f0330af6080d1.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9971985599533220"}, {"post_id": "9965739366824510", "author": "Rigo Chang", "text_preview": "請教大家這隻是小蟪蛄嗎?", "location": "", "img": "9965739366824510/5ebb345eeaa04209.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9965739366824510"}, {"post_id": "9926464077418706", "author": "Stella Kao", "text_preview": "請問這是剛脫殻的蟪蛄嗎？ 2025/06/20陽明山", "location": "陽明山", "img": "9926464077418706/b020b44b1ea47561.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9926464077418706"}, {"post_id": "8539694119429049", "author": "黃世仁", "text_preview": "黃世仁的貼文", "location": "", "img": "8539694119429049/b9deb67de22d4885.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/8539694119429049"}, {"post_id": "7861581157240352", "author": "Cs的生態筆記", "text_preview": "請問是小蟪蛄的聲音嗎?", "location": "", "img": "7861581157240352/44037711da4816e5.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7861581157240352"}, {"post_id": "7634164856648651", "author": "陳佳玫", "text_preview": "陳佳玫的貼文", "location": "", "img": "7634164856648651/e77da3fbf0f4ee18.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7634164856648651"}, {"post_id": "7611092442289226", "author": "Cs的生態筆記", "text_preview": "請問這兩隻都是蟪蛄嗎?", "location": "", "img": "7611092442289226/2fe4a73dd1bb0290.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7611092442289226"}, {"post_id": "7604484859616651", "author": "羅美玲", "text_preview": "羅美玲的貼文", "location": "", "img": "7604484859616651/d608cd0898acfe20.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7604484859616651"}, {"post_id": "7602348009830336", "author": "林少凡", "text_preview": "攝於大直明水公園", "location": "大直明水公園", "img": "7602348009830336/5bbd756bc3d14bed.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7602348009830336"}]}, {"name": "端黑蟬", "latin": "", "family": "", "note": "", "count": 8, "locations": ["陽明山"], "photos": ["27017471921224655/ab84de635df86758.jpg", "23933790039592874/64fd2ed88f16f4c5.jpg", "23933790039592874/ecc91ff1f969ae40.jpg", "23933790039592874/ac921b90448fbae3.jpg", "23933790039592874/6a56697ad73e58ac.jpg", "10049860305079082/e8a09cb3f1f2bcd4.jpg"], "notes": [], "records": [{"post_id": "27017471921224655", "author": "郭雅玲", "text_preview": "郭雅玲的貼文", "location": "", "img": "27017471921224655/ab84de635df86758.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/27017471921224655"}, {"post_id": "23933790039592874", "author": "陳淑真", "text_preview": "陳淑真的貼文", "location": "", "img": "23933790039592874/64fd2ed88f16f4c5.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/23933790039592874"}, {"post_id": "10049860305079082", "author": "加藤貴也", "text_preview": "請問牠是什麼蟬嗎", "location": "", "img": "10049860305079082/e8a09cb3f1f2bcd4.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/10049860305079082"}, {"post_id": "9999097156822064", "author": "加藤貴也", "text_preview": "加藤貴也的貼文", "location": "", "img": "9999097156822064/c0d72b441be1dab2.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9999097156822064"}, {"post_id": "9964972650234515", "author": "燕燕", "text_preview": "燕燕的貼文", "location": "", "img": "9964972650234515/eec7127189b2ca7e.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9964972650234515"}, {"post_id": "9905459472852500", "author": "Yun-Hsuan Sun", "text_preview": "請教先進種類，感謝。", "location": "", "img": "9905459472852500/ce41759762007717.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9905459472852500"}, {"post_id": "9887225464675901", "author": "歐陽歐陽", "text_preview": "歐陽歐陽的貼文", "location": "", "img": "9887225464675901/c0389820bff1393c.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9887225464675901"}, {"post_id": "7663016297096840", "author": "黃秋菊", "text_preview": "完全無視於我的接近及騷擾", "location": "陽明山", "img": "7663016297096840/956d114445023dbd.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7663016297096840"}]}, {"name": "陽明山暮蟬", "latin": "", "family": "", "note": "", "count": 8, "locations": ["陽明山", "陽明山磺嘴山", "二子坪", "陽明山（擎天崗）"], "photos": ["27009900468648467/709243ede391961b.jpg", "27009900468648467/93a6ea54b2c8e898.jpg", "26943390705299444/a5e0565651df98a0.jpg", "9792508267480955/65f7f3aa9c0800c8.jpg", "8065029026895563/84775cf6af0d69fe.jpg", "8065029026895563/a0e387df57b871e6.jpg"], "notes": [], "records": [{"post_id": "27009900468648467", "author": "詹寶玉", "text_preview": "詹寶玉的貼文", "location": "陽明山", "img": "27009900468648467/709243ede391961b.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/27009900468648467"}, {"post_id": "26943390705299444", "author": "美玲", "text_preview": "美玲的貼文", "location": "陽明山", "img": "26943390705299444/a5e0565651df98a0.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/26943390705299444"}, {"post_id": "9792508267480955", "author": "PoYa Chang", "text_preview": "請問這是陽明山暮蟬嗎？", "location": "", "img": "9792508267480955/65f7f3aa9c0800c8.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9792508267480955"}, {"post_id": "8065029026895563", "author": "柯焜耀", "text_preview": "柯焜耀的貼文", "location": "陽明山磺嘴山", "img": "8065029026895563/84775cf6af0d69fe.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/8065029026895563"}, {"post_id": "7704839322914537", "author": "Stella Kao", "text_preview": "請問這兩隻都是陽明山暮蟬嗎？", "location": "", "img": "7704839322914537/98ddf295a769ddcc.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7704839322914537"}, {"post_id": "7659208727477597", "author": "Steven Su", "text_preview": "請教是陽明山暮蟬? 20240629 @ 二子坪", "location": "二子坪", "img": "7659208727477597/12d5a1fef3fdb32d.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7659208727477597"}, {"post_id": "7635037456561391", "author": "Jennifer King", "text_preview": "#陽明山暮蟬", "location": "", "img": "7635037456561391/2f37466ff3df9daa.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7635037456561391"}, {"post_id": "7623272301071240", "author": "吳靖惠", "text_preview": "吳靖惠的貼文", "location": "陽明山（擎天崗）", "img": "7623272301071240/912f18de1dfef5d8.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7623272301071240"}]}, {"name": "台灣熊蟬", "latin": "Cryptotympana takasagona", "family": "蟬科 Cicadidae", "note": "台灣最大型蟬類之一，鳴聲響亮", "count": 8, "locations": [], "photos": ["27008756392096208/b5fdb4228b5881ee.jpg", "27008756392096208/e93852da228022d8.jpg", "27008756392096208/922b5ab0037f4ed6.jpg", "27008756392096208/39a0ec70bc4b2872.jpg", "27008756392096208/c04c0e784510faa7.jpg", "26842341905404325/a8179fe18cf6762e.jpg"], "notes": [], "records": [{"post_id": "27008756392096208", "author": "張鵬安", "text_preview": "張鵬安的貼文", "location": "", "img": "27008756392096208/b5fdb4228b5881ee.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/27008756392096208"}, {"post_id": "26842341905404325", "author": "柯焜耀", "text_preview": "柯焜耀的貼文", "location": "", "img": "26842341905404325/a8179fe18cf6762e.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/26842341905404325"}, {"post_id": "26835838499387999", "author": "Houng Lou", "text_preview": "請問大師們 它是何蟬叫聲？我實在查不出來", "location": "", "img": "", "post_url": "https://www.facebook.com/groups/498975763500965/posts/26835838499387999"}, {"post_id": "9996856717046108", "author": "余悠遊", "text_preview": "余悠遊的貼文", "location": "", "img": "9996856717046108/48b5e1080a26f05f.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9996856717046108"}, {"post_id": "9831910220207426", "author": "白拉菜", "text_preview": "第一次知道原來蟬可以這麼密集", "location": "", "img": "9831910220207426/eeaa7aba87b0d993.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9831910220207426"}, {"post_id": "7765471656851303", "author": "盧寬寬", "text_preview": "盧寬寬的貼文", "location": "", "img": "7765471656851303/562ebce6ced393e2.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7765471656851303"}, {"post_id": "7718748111523658", "author": "Cs的生態筆記", "text_preview": "台灣熊蟬的聲音", "location": "", "img": "7718748111523658/bb4609a5f90d393f.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7718748111523658"}, {"post_id": "7673666349365168", "author": "簡詩軒", "text_preview": "簡詩軒的貼文", "location": "", "img": "7673666349365168/066334a3a0929ab0.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7673666349365168"}]}, {"name": "細蟬", "latin": "Kosemia matsumurai", "family": "蟬科 Cicadidae", "note": "體型細長，分布廣泛", "count": 8, "locations": ["捎來步道"], "photos": ["10041377075927405/02600ab6143d0150.jpg", "10029602907104822/bc18af5bbdfda6a5.jpg", "9917618984969882/3fc3b7e33bc1671a.jpg", "9798935186838263/e06705efc8b01040.jpg", "9650103465054770/9713f01d7056954f.jpg", "9650103465054770/cf08a2816e434942.jpg"], "notes": ["根據蟬蛻判斷可能是細蟬或台灣姬蟬，但是細蟬機會大一些", "翠林 那就是細蟬，我其實已經看到細蟬的特徵了", "陳振祥 老師 細蟬不是都在比較中海拔的地方嗎"], "records": [{"post_id": "10041377075927405", "author": "陳榮章", "text_preview": "陳榮章的貼文", "location": "", "img": "10041377075927405/02600ab6143d0150.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/10041377075927405"}, {"post_id": "10029602907104822", "author": "陳榮章", "text_preview": "陳榮章的貼文", "location": "", "img": "10029602907104822/bc18af5bbdfda6a5.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/10029602907104822"}, {"post_id": "9917618984969882", "author": "翠林", "text_preview": "翠林的貼文", "location": "", "img": "9917618984969882/3fc3b7e33bc1671a.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9917618984969882"}, {"post_id": "9798935186838263", "author": "陳榮章", "text_preview": "陳榮章的貼文", "location": "", "img": "9798935186838263/e06705efc8b01040.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9798935186838263"}, {"post_id": "9650103465054770", "author": "吳文彬", "text_preview": "吳文彬的貼文", "location": "捎來步道", "img": "9650103465054770/9713f01d7056954f.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9650103465054770"}, {"post_id": "7651889711542832", "author": "黃秋菊", "text_preview": "黃秋菊的貼文", "location": "", "img": "7651889711542832/1847528ee3acf2fe.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7651889711542832"}, {"post_id": "7641563325908804", "author": "Cs的生態筆記", "text_preview": "請打開音響聽蟬叫聲，不好意思，請問牠是誰?", "location": "", "img": "7641563325908804/ba429b6e995d6b49.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7641563325908804"}, {"post_id": "7599238010141336", "author": "許嘉宏", "text_preview": "許嘉宏的貼文", "location": "", "img": "7599238010141336/1ab01eaa2e0e8e82.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7599238010141336"}]}, {"name": "姬春蟬屬", "latin": "", "family": "", "note": "", "count": 7, "locations": ["高雄六龜", "觀霧"], "photos": ["27030346733270507/21227e395651028b.jpg", "27030346733270507/aebae3d70cb2b06d.jpg", "27030346733270507/253a0e7fce972f45.jpg", "27029290606709453/32b91f14f1affcfc.jpg", "27029290606709453/9bc0ba4361b3c1a5.jpg", "24762493313389205/fd4a5f32be47d4ef.jpg"], "notes": [], "records": [{"post_id": "27030346733270507", "author": "張鵬安", "text_preview": "張鵬安的貼文", "location": "", "img": "27030346733270507/21227e395651028b.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/27030346733270507"}, {"post_id": "27029290606709453", "author": "張鵬安", "text_preview": "張鵬安的貼文", "location": "", "img": "27029290606709453/32b91f14f1affcfc.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/27029290606709453"}, {"post_id": "24762493313389205", "author": "Alfred Wallace", "text_preview": "友人高雄六龜看到的， 請教是什麼蟬的蟬蛻，感謝", "location": "高雄六龜", "img": "24762493313389205/fd4a5f32be47d4ef.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24762493313389205"}, {"post_id": "9660892107309239", "author": "陳松", "text_preview": "陳松的貼文", "location": "", "img": "9660892107309239/6c982ade53957b85.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9660892107309239"}, {"post_id": "7656023104462826", "author": "施禮正", "text_preview": "施禮正的貼文", "location": "觀霧", "img": "7656023104462826/e1d3db059dfa799e.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7656023104462826"}, {"post_id": "7645910005474136", "author": "許嘉宏", "text_preview": "許嘉宏的貼文", "location": "", "img": "7645910005474136/2bf1ef3bf4f5e978.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7645910005474136"}, {"post_id": "7638359912895812", "author": "Thing-Kou Kao", "text_preview": "數量不少想要找到不容易", "location": "", "img": "7638359912895812/00204fcec426d5be.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7638359912895812"}]}, {"name": "紋翅暮蟬", "latin": "", "family": "", "note": "", "count": 6, "locations": [], "photos": ["27044116458560201/2f09ce05bad4e4b6.jpg", "26841955515442964/90c1d5f1aa2d0e31.jpg", "9988849427846837/b5e40e77b4bc250f.jpg", "7891333894265078/8136c6cdb421d59e.jpg", "7891333894265078/6b9bb893688115d1.jpg", "7891333894265078/b24e856dff18e745.jpg"], "notes": [], "records": [{"post_id": "27044116458560201", "author": "段思里", "text_preview": "段思里的貼文", "location": "", "img": "27044116458560201/2f09ce05bad4e4b6.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/27044116458560201"}, {"post_id": "26841955515442964", "author": "黃淑慎", "text_preview": "黃淑慎的貼文", "location": "", "img": "26841955515442964/90c1d5f1aa2d0e31.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/26841955515442964"}, {"post_id": "9988849427846837", "author": "黃昶憲", "text_preview": "黃昶憲的貼文", "location": "", "img": "9988849427846837/b5e40e77b4bc250f.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9988849427846837"}, {"post_id": "7891333894265078", "author": "吳宜叡", "text_preview": "吳宜叡的貼文", "location": "", "img": "7891333894265078/8136c6cdb421d59e.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7891333894265078"}, {"post_id": "7773774919354310", "author": "Tasman Liu", "text_preview": "紋翅暮蟬", "location": "", "img": "7773774919354310/df4131f2a4bc5b8b.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7773774919354310"}, {"post_id": "7773764446022024", "author": "Tasman Liu", "text_preview": "紋翅暮蟬， 雄", "location": "", "img": "7773764446022024/683e110f8b2b79c4.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7773764446022024"}]}, {"name": "可禮大蟬", "latin": "", "family": "", "note": "", "count": 6, "locations": ["鳶嘴山", "阿里山"], "photos": ["24688560984115772/d23b7d678fc33e2e.jpg", "24579393001699238/7bea1cb6e86a2a84.jpg", "24484074327897773/d359af04c07597c2.jpg", "24392338700404670/0f7a80ad51a9f9ed.jpg", "24246280065010535/fee84fd3528d9b07.jpg", "7939718109426656/3925cc55494d3d6b.jpg"], "notes": [], "records": [{"post_id": "24688560984115772", "author": "郭月秀", "text_preview": "郭月秀的貼文", "location": "", "img": "24688560984115772/d23b7d678fc33e2e.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24688560984115772"}, {"post_id": "24579393001699238", "author": "吳明勳", "text_preview": "吳明勳的貼文", "location": "鳶嘴山", "img": "24579393001699238/7bea1cb6e86a2a84.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24579393001699238"}, {"post_id": "24484074327897773", "author": "Леший", "text_preview": "請問這是哪種蟬的蟬蛻", "location": "阿里山", "img": "24484074327897773/d359af04c07597c2.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24484074327897773"}, {"post_id": "24392338700404670", "author": "林美惠", "text_preview": "林美惠的貼文", "location": "", "img": "24392338700404670/0f7a80ad51a9f9ed.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24392338700404670"}, {"post_id": "24246280065010535", "author": "加藤貴也", "text_preview": "加藤貴也的貼文", "location": "", "img": "24246280065010535/fee84fd3528d9b07.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24246280065010535"}, {"post_id": "7939718109426656", "author": "Kevin Huang", "text_preview": "不曉得這樣是否能辨識", "location": "", "img": "7939718109426656/3925cc55494d3d6b.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7939718109426656"}]}, {"name": "草蟬", "latin": "Mogannia hebes", "family": "蟬科 Cicadidae", "note": "體型小，常見於草地與低矮植被", "count": 5, "locations": ["蘭嶼", "二子坪步道"], "photos": ["24337059692599238/46c3351e6be77a29.jpg", "9882503541814760/c980038a3a918889.jpg", "9882503541814760/0f86e272c2520e90.jpg", "9882503541814760/6782bff36d7262c6.jpg", "9882503541814760/b400658dae646e16.jpg", "7660365210695282/fd6053c78eb930bb.jpg"], "notes": [], "records": [{"post_id": "24337059692599238", "author": "温屾烺", "text_preview": "温屾烺的貼文", "location": "", "img": "24337059692599238/46c3351e6be77a29.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24337059692599238"}, {"post_id": "9882503541814760", "author": "Blophin Shih", "text_preview": "請問達人 這是什麼蟬? 蘭嶼", "location": "蘭嶼", "img": "9882503541814760/c980038a3a918889.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9882503541814760"}, {"post_id": "7660365210695282", "author": "林貞", "text_preview": "林貞的貼文", "location": "", "img": "7660365210695282/fd6053c78eb930bb.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7660365210695282"}, {"post_id": "7632542906810846", "author": "黃秋菊", "text_preview": "黃秋菊的貼文", "location": "", "img": "7632542906810846/32103b56b2c4939c.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7632542906810846"}, {"post_id": "7630871883644615", "author": "Garlicia Lee", "text_preview": "左一攝於二子坪步道，右一攝於七星公園，", "location": "二子坪步道", "img": "7630871883644615/308021c669b44603.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7630871883644615"}]}, {"name": "黑翅草蟬", "latin": "Mogannia formosana", "family": "蟬科 Cicadidae", "note": "翅膀帶有黑色，台灣特有種", "count": 4, "locations": ["陽明山紗帽山"], "photos": ["10079665445431901/d69fdf3e7a1d4662.jpg", "9824088967656218/d3877a6a307b5782.jpg", "7768649499866852/9e0d232e89ba94a9.jpg", "7621631694568634/225a66b5a31381e0.jpg"], "notes": [], "records": [{"post_id": "10079665445431901", "author": "謝智偉", "text_preview": "謝智偉的貼文", "location": "", "img": "10079665445431901/d69fdf3e7a1d4662.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/10079665445431901"}, {"post_id": "9824088967656218", "author": "Yasumasa Saisho", "text_preview": "陽明山國家公園紗帽山頂附近發現了許多蟬的蛻殼。全長約15毫米。這是哪種蟬的蛻殼呢？在紗帽山上有兩種姬春蟬在鳴叫。一種我認為是青面姬春蟬，但另一種是什麼呢？我猜想這可能是那種蟬的蛻殼。請教", "location": "陽明山紗帽山", "img": "9824088967656218/d3877a6a307b5782.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9824088967656218"}, {"post_id": "7768649499866852", "author": "韓羲之", "text_preview": "韓羲之的貼文", "location": "", "img": "7768649499866852/9e0d232e89ba94a9.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7768649499866852"}, {"post_id": "7621631694568634", "author": "黃秋菊", "text_preview": "黃秋菊的貼文", "location": "", "img": "7621631694568634/225a66b5a31381e0.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7621631694568634"}]}, {"name": "寒蟬屬", "latin": "", "family": "", "note": "", "count": 4, "locations": ["五指山觀音寺"], "photos": ["8195427667189031/34b7f01c0c7fe747.jpg", "8168112303253901/11e11c1b4fb319b2.jpg", "8025539837511149/f816e72308478ba8.jpg", "7901800586551742/9616b45b69b5a4f7.jpg"], "notes": [], "records": [{"post_id": "8195427667189031", "author": "王莆", "text_preview": "王莆的貼文", "location": "", "img": "8195427667189031/34b7f01c0c7fe747.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/8195427667189031"}, {"post_id": "8168112303253901", "author": "吳靖惠", "text_preview": "吳靖惠的貼文", "location": "", "img": "8168112303253901/11e11c1b4fb319b2.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/8168112303253901"}, {"post_id": "8025539837511149", "author": "Jane Lee", "text_preview": "#寒蟬@五指山觀音寺", "location": "五指山觀音寺", "img": "8025539837511149/f816e72308478ba8.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/8025539837511149"}, {"post_id": "7901800586551742", "author": "陳榮章", "text_preview": "陳榮章的貼文", "location": "", "img": "7901800586551742/9616b45b69b5a4f7.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7901800586551742"}]}, {"name": "蟪蛄", "latin": "Platypleura kaempferi", "family": "蟬科 Cicadidae", "note": "體型小，斑紋複雜，常被忽略", "count": 3, "locations": [], "photos": ["27054203217551525/ae83204530492b0c.jpg", "9837109873020794/d6f41aa8e10ba04b.jpg"], "notes": ["如果是一月~四月左右拍到的比較可能是長毛蟪蛄", "上面那個應該是小蟪蛄或蟪蛄的蟬蛻，下面那個不確定，可能是姬蟬的、細蟬的或青面姬春蟬的"], "records": [{"post_id": "27057571317214715", "author": "Hunter Chao", "text_preview": "分享一下不同於常人看蟬的畫面", "location": "", "img": "", "post_url": "https://www.facebook.com/groups/498975763500965/posts/27057571317214715"}, {"post_id": "27054203217551525", "author": "黃淑慎", "text_preview": "黃淑慎的貼文", "location": "", "img": "27054203217551525/ae83204530492b0c.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/27054203217551525"}, {"post_id": "9837109873020794", "author": "湯興漢", "text_preview": "湯興漢的貼文", "location": "", "img": "9837109873020794/d6f41aa8e10ba04b.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9837109873020794"}]}, {"name": "紅脈熊蟬", "latin": "", "family": "", "note": "", "count": 3, "locations": [], "photos": ["24263604143278127/e00d53f941b88edc.jpg", "23916728151299063/534fcfff067321b9.jpg", "23916728151299063/b2112aa4ddb0e486.jpg", "7694695750595561/c42459cbc88de51b.jpg", "7694695750595561/29d5a3b811e3f1f0.jpg", "7694695750595561/ca1feda0a95321d1.jpg"], "notes": [], "records": [{"post_id": "24263604143278127", "author": "張憶如", "text_preview": "應該是黑蟬之類的", "location": "", "img": "24263604143278127/e00d53f941b88edc.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24263604143278127"}, {"post_id": "23916728151299063", "author": "林貞", "text_preview": "林貞的貼文", "location": "", "img": "23916728151299063/534fcfff067321b9.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/23916728151299063"}, {"post_id": "7694695750595561", "author": "Josh Chen", "text_preview": "手蟬", "location": "", "img": "7694695750595561/c42459cbc88de51b.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7694695750595561"}]}, {"name": "大坪暮蟬", "latin": "", "family": "", "note": "", "count": 3, "locations": ["屏東"], "photos": ["23958598107112067/7a3c96bfe0478f58.jpg", "10037053499693096/b75fb9079cfffb9a.jpg", "7613824872015983/ab59e7fb06e451af.jpg", "7613824872015983/3d6b2c1ec3b5a1b9.jpg", "7613824872015983/bb150c38eb2940ab.jpg"], "notes": [], "records": [{"post_id": "23958598107112067", "author": "陳榮章", "text_preview": "陳榮章的貼文", "location": "", "img": "23958598107112067/7a3c96bfe0478f58.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/23958598107112067"}, {"post_id": "10037053499693096", "author": "Steven Su", "text_preview": "20250703 @ 屏東， 請教蟬名？", "location": "屏東", "img": "10037053499693096/b75fb9079cfffb9a.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/10037053499693096"}, {"post_id": "7613824872015983", "author": "蔡岳承", "text_preview": "蔡岳承的貼文", "location": "", "img": "7613824872015983/ab59e7fb06e451af.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7613824872015983"}]}, {"name": "渡邊幽蟬", "latin": "", "family": "", "note": "", "count": 3, "locations": ["屏東滿州"], "photos": ["9693384010726715/51e79f7c5703e665.jpg", "9693384010726715/5a433614798dc1e8.jpg", "7905162792882188/23fa1a56d819f22c.jpg", "7620511554680648/7d33e83b2e18a955.jpg"], "notes": [], "records": [{"post_id": "9693384010726715", "author": "林慶禧", "text_preview": "林慶禧的貼文", "location": "", "img": "9693384010726715/51e79f7c5703e665.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/9693384010726715"}, {"post_id": "7905162792882188", "author": "廖文泉", "text_preview": "廖文泉的貼文", "location": "", "img": "7905162792882188/23fa1a56d819f22c.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7905162792882188"}, {"post_id": "7620511554680648", "author": "Tasman Liu", "text_preview": "渡邊幽蟬，拍攝於屏東滿州，0616/’24", "location": "屏東滿州", "img": "7620511554680648/7d33e83b2e18a955.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7620511554680648"}]}, {"name": "青面姬春蟬", "latin": "", "family": "", "note": "", "count": 2, "locations": [], "photos": ["27030264269945420/c93089312bbc039f.jpg", "27030264269945420/88d4231c2ce1696e.jpg", "23891853037119908/bd780f81aee76526.jpg"], "notes": [], "records": [{"post_id": "27030264269945420", "author": "Jennifer King", "text_preview": "向各位前輩們請教該物種名稱？我翻閱途徑並上網查詢，還是搞不清楚，懇請不吝賜教，謝謝！", "location": "", "img": "27030264269945420/c93089312bbc039f.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/27030264269945420"}, {"post_id": "23891853037119908", "author": "加藤貴也", "text_preview": "加藤貴也的貼文", "location": "", "img": "23891853037119908/bd780f81aee76526.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/23891853037119908"}]}, {"name": "岩崎寒蟬", "latin": "", "family": "", "note": "", "count": 2, "locations": ["峨眉"], "photos": ["24315741054731102/07960ca7a4602ca9.jpg", "24315741054731102/ee7dacfca6a4730f.jpg", "24297131746592033/35ec167eeb148906.jpg"], "notes": [], "records": [{"post_id": "24315741054731102", "author": "廖彥智", "text_preview": "廖彥智的貼文", "location": "", "img": "24315741054731102/07960ca7a4602ca9.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24315741054731102"}, {"post_id": "24297131746592033", "author": "謝瑞珍", "text_preview": "謝瑞珍的貼文", "location": "峨眉", "img": "24297131746592033/35ec167eeb148906.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24297131746592033"}]}, {"name": "熊蟬屬", "latin": "", "family": "", "note": "", "count": 2, "locations": [], "photos": ["24272944189010789/bf1c1424d4b2ebca.jpg", "10022240367841076/769932926964215c.jpg"], "notes": [], "records": [{"post_id": "24272944189010789", "author": "Godwin Lee", "text_preview": "請問各位前輩這是熊蟬嗎？", "location": "", "img": "24272944189010789/bf1c1424d4b2ebca.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24272944189010789"}, {"post_id": "10022240367841076", "author": "Joseph Huang", "text_preview": "希望還有機會能拍到", "location": "", "img": "10022240367841076/769932926964215c.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/10022240367841076"}]}, {"name": "鱉甲暮蟬", "latin": "", "family": "", "note": "", "count": 2, "locations": ["武令山"], "photos": ["23960116560293555/beaa4241f124e4a0.jpg", "7727208294010973/14458b06ab26c33e.jpg"], "notes": [], "records": [{"post_id": "23960116560293555", "author": "林柏昌", "text_preview": "林柏昌的貼文", "location": "", "img": "23960116560293555/beaa4241f124e4a0.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/23960116560293555"}, {"post_id": "7727208294010973", "author": "Hunter Chao", "text_preview": "在武令山記錄到的暮蟬", "location": "武令山", "img": "7727208294010973/14458b06ab26c33e.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7727208294010973"}]}, {"name": "蝦夷蟬屬", "latin": "", "family": "", "note": "", "count": 1, "locations": [], "photos": ["27042129362092244/b3e6ec70436a40ee.jpg"], "notes": [], "records": [{"post_id": "27042129362092244", "author": "段思里", "text_preview": "段思里的貼文", "location": "", "img": "27042129362092244/b3e6ec70436a40ee.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/27042129362092244"}]}, {"name": "太平姬春蟬", "latin": "", "family": "", "note": "", "count": 1, "locations": [], "photos": ["26854321570873025/f6f836fe4e8bae97.jpg"], "notes": [], "records": [{"post_id": "26854321570873025", "author": "劉樂山", "text_preview": "劉樂山的貼文", "location": "", "img": "26854321570873025/f6f836fe4e8bae97.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/26854321570873025"}]}, {"name": "台灣暗蟬", "latin": "", "family": "", "note": "", "count": 1, "locations": ["台南安定"], "photos": ["26843243838647465/0c4d0af188ee2e74.jpg"], "notes": [], "records": [{"post_id": "26843243838647465", "author": "黃昶憲", "text_preview": "黃昶憲的貼文", "location": "台南安定", "img": "26843243838647465/0c4d0af188ee2e74.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/26843243838647465"}]}, {"name": "台灣爺蟬", "latin": "Cryptotympana aquila", "family": "蟬科 Cicadidae", "note": "南部低海拔常見，外觀似熊蟬", "count": 1, "locations": [], "photos": ["26836715969300252/ba6769682bcaf3cb.jpg"], "notes": [], "records": [{"post_id": "26836715969300252", "author": "吳文彬", "text_preview": "吳文彬的貼文", "location": "", "img": "26836715969300252/ba6769682bcaf3cb.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/26836715969300252"}]}, {"name": "高士佛姬春蟬", "latin": "", "family": "", "note": "", "count": 1, "locations": [], "photos": ["26328682843436903/49bbb61a3f7410e6.jpg"], "notes": [], "records": [{"post_id": "26328682843436903", "author": "陳榮章", "text_preview": "陳榮章的貼文", "location": "", "img": "26328682843436903/49bbb61a3f7410e6.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/26328682843436903"}]}, {"name": "高山姬春蟬", "latin": "", "family": "", "note": "", "count": 1, "locations": [], "photos": ["26298353413136513/e9c9fc67e8087462.jpg", "26298353413136513/dd8ec1b7b5edc1c3.jpg", "26298353413136513/0cf1dd6d11327c7b.jpg"], "notes": [], "records": [{"post_id": "26298353413136513", "author": "施禮正", "text_preview": "施禮正的貼文", "location": "", "img": "26298353413136513/e9c9fc67e8087462.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/26298353413136513"}]}, {"name": "蟪蛄屬", "latin": "", "family": "", "note": "", "count": 1, "locations": [], "photos": ["26269691096002745/2522cf4f6c17d676.jpg"], "notes": [], "records": [{"post_id": "26269691096002745", "author": "黃世仁", "text_preview": "黃世仁的貼文", "location": "", "img": "26269691096002745/2522cf4f6c17d676.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/26269691096002745"}]}, {"name": "北埔姬春蟬", "latin": "", "family": "", "note": "", "count": 1, "locations": ["陽明山紗帽山步道"], "photos": ["25374423575529506/0e654049574a6183.jpg"], "notes": [], "records": [{"post_id": "25374423575529506", "author": "Yasumasa Saisho", "text_preview": "這是2025年6月6日在陽明山・紗帽山步道聽到的蟬的鳴叫聲。我認為是姬春蟬屬的蟬，請告訴我這個蟬的種名。謝謝。", "location": "陽明山紗帽山步道", "img": "25374423575529506/0e654049574a6183.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/25374423575529506"}]}, {"name": "小暮蟬", "latin": "Tanna japonensis", "family": "蟬科 Cicadidae", "note": "暮蟬屬中體型較小的種類", "count": 1, "locations": [], "photos": ["24168851979420011/125768bbf1f6ce66.jpg"], "notes": [], "records": [{"post_id": "24168851979420011", "author": "謝瑞珍", "text_preview": "謝瑞珍的貼文", "location": "", "img": "24168851979420011/125768bbf1f6ce66.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/24168851979420011"}]}, {"name": "黃蟪蛄", "latin": "", "family": "", "note": "", "count": 1, "locations": [], "photos": ["10034542509944195/5036439e6ef93932.jpg", "10034542509944195/555927064a1770fb.jpg"], "notes": [], "records": [{"post_id": "10034542509944195", "author": "黃秀娥", "text_preview": "黃秀娥的貼文", "location": "", "img": "10034542509944195/5036439e6ef93932.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/10034542509944195"}]}, {"name": "蓬萊大蟬", "latin": "", "family": "", "note": "", "count": 1, "locations": [], "photos": ["8073152966083169/a72a9c6f6a8eb15b.jpg", "8073152966083169/c6bb5c44de241729.jpg"], "notes": [], "records": [{"post_id": "8073152966083169", "author": "Syoutei Kaku", "text_preview": "二圖為不同個體，但看起像是同一種，故一起發文詢問版上大大", "location": "", "img": "8073152966083169/a72a9c6f6a8eb15b.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/8073152966083169"}]}, {"name": "台灣虎翅蟬", "latin": "", "family": "", "note": "", "count": 1, "locations": [], "photos": ["7607324522666018/bcb730283eebe1b7.jpg"], "notes": [], "records": [{"post_id": "7607324522666018", "author": "吳文彬", "text_preview": "台灣虎翅蟬影片", "location": "", "img": "7607324522666018/bcb730283eebe1b7.jpg", "post_url": "https://www.facebook.com/groups/498975763500965/posts/7607324522666018"}]}];
+const SAVED_NOTES = {};
+
+function buildNav() {
+  const nav = document.getElementById("sp-nav");
+  SPECIES.forEach((sp, i) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<a href="#sp-${i}">
+      ${sp.name} <span class="cnt">${sp.count}</span>
+    </a>`;
+    nav.appendChild(li);
+  });
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        document.querySelectorAll(".sp-nav-list a").forEach(a => {
+          a.classList.toggle("active", a.getAttribute("href") === "#" + id);
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll(".sp-section").forEach(s => observer.observe(s));
+}
+
+function buildSections() {
+  const main = document.getElementById("main-content");
+  main.innerHTML = SPECIES.map((sp, i) => {
+    const galleryHtml = sp.photos.length
+      ? sp.photos.map(fn => `<img src="images/${fn}" onclick="openLb(this.src)" alt="${sp.name}">`).join("")
+      : `<div class="no-photo">🎵</div>`;
+
+    const notesHtml = sp.notes.length
+      ? `<div class="notes-grid">${sp.notes.map(n => `<div class="note-item">${escHtml(n)}</div>`).join("")}</div>`
+      : `<p class="no-notes">目前尚無社群識別筆記</p>`;
+
+    const locsHtml = sp.locations.length
+      ? sp.locations.map(l => `<span class="loc-tag">${l}</span>`).join("")
+      : `<span class="no-notes">—</span>`;
+
+    const recsHtml = sp.records.map(r => {
+      const imgPart = r.img
+        ? `<img src="images/${r.img}" alt="" onerror="this.parentNode.innerHTML='<div class=rec-mini-noimg>🎵</div>'">`
+        : `<div class="rec-mini-noimg">🎵</div>`;
+      return `<a class="rec-mini" href="${r.post_url}" target="_blank">
+        ${imgPart}
+        <div class="rec-mini-body">
+          <strong>${escHtml(r.author.replace(/\\s*·\\s*追蹤$/, ""))}</strong>
+          ${escHtml((r.text_preview || "").slice(0, 35))}
+        </div>
+      </a>`;
+    }).join("");
+
+    const noteBadge = sp.note ? `<span class="badge">${sp.note}</span>` : "";
+    const familyBadge = sp.family ? `<span class="badge">${sp.family}</span>` : "";
+
+    return `
+    <section class="sp-section" id="sp-${i}">
+      <div class="sp-header">
+        <div>
+          <div class="sp-name">${sp.name}</div>
+          <div class="sp-latin">${sp.latin || ""}</div>
+          <div class="sp-badges">${familyBadge}${noteBadge}</div>
+        </div>
+        <div class="sp-count-badge">
+          <strong>${sp.count}</strong>筆紀錄
+        </div>
+      </div>
+
+      <div class="sp-gallery">${galleryHtml}</div>
+
+      <div class="sp-body">
+
+        <div>
+          <div class="sp-section-label">✏️ 我的筆記</div>
+          <textarea class="my-note" data-sp="${escHtml(sp.name)}"
+            placeholder="點此輸入你的觀察筆記、導覽解說重點、生態習性…（自動儲存在此瀏覽器）"></textarea>
+        </div>
+
+        <div>
+          <div class="sp-section-label">🔍 社群識別筆記</div>
+          ${notesHtml}
+        </div>
+
+        <div>
+          <div class="sp-section-label">📍 常見觀察地點</div>
+          <div class="loc-tags">${locsHtml}</div>
+        </div>
+
+        ${sp.records.length ? `
+        <div>
+          <div class="sp-section-label">📋 觀察紀錄</div>
+          <div class="records-row">${recsHtml}</div>
+        </div>` : ""}
+
+      </div>
+    </section>`;
+  }).join("");
+
+  document.querySelectorAll(".my-note").forEach(ta => {
+    const key = "mynote:" + ta.dataset.sp;
+    ta.value = localStorage.getItem(key) ?? SAVED_NOTES[ta.dataset.sp] ?? "";
+    ta.addEventListener("input", () => localStorage.setItem(key, ta.value));
+  });
+}
+
+function exportNotes() {
+  const notes = {};
+  document.querySelectorAll(".my-note").forEach(ta => {
+    if (ta.value.trim()) notes[ta.dataset.sp] = ta.value;
+  });
+  const blob = new Blob([JSON.stringify(notes, null, 2)], {type: "application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "species_notes.json";
+  a.click();
+  const toast = document.getElementById("toast");
+  toast.style.display = "block";
+  setTimeout(() => toast.style.display = "none", 6000);
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function openLb(src) {
+  document.getElementById("lb-img").src = src;
+  document.getElementById("lb").classList.add("open");
+}
+function closeLb() { document.getElementById("lb").classList.remove("open"); }
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeLb(); });
+
+buildSections();
+buildNav();
+</script>
+</body>
+</html>
