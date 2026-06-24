@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>台灣蟬辨識指南</title>
+<style>
+  :root {
+    --bg: #fdf8f0;
+    --card-bg: #fff;
+    --accent: #b8860b;
+    --accent-light: #fff8e1;
+    --text: #3e2c00;
+    --muted: #8a7560;
+    --border: #e0d4b0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system,"Noto Sans TC",sans-serif; background:var(--bg); color:var(--text); }
+
+  header {
+    background: var(--accent); color: white;
+    padding: 1rem 1.5rem;
+    display: flex; align-items: center; gap: 1.5rem;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  }
+  header h1 { font-size: 1.15rem; font-weight: 700; }
+  header .subtitle { font-size: .78rem; opacity: .8; margin-top: .1rem; }
+  nav.header-nav { margin-left: auto; display: flex; gap: .8rem; }
+  nav.header-nav a {
+    color: rgba(255,255,255,.85); text-decoration: none;
+    font-size: .85rem; padding: .25rem .7rem;
+    border-radius: 999px; border: 1px solid rgba(255,255,255,.4);
+    transition: background .15s;
+  }
+  nav.header-nav a:hover, nav.header-nav a.active { background: rgba(255,255,255,.2); color: white; }
+
+  .layout { display: flex; }
+  aside {
+    width: 220px; min-width: 220px;
+    background: var(--card-bg); border-right: 1px solid var(--border);
+    padding: 1rem .8rem;
+    height: calc(100vh - 58px); overflow-y: auto;
+    position: sticky; top: 58px;
+  }
+  aside h3 {
+    font-size: .68rem; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--muted); margin: 1rem 0 .4rem;
+  }
+  aside h3:first-child { margin-top: 0; }
+  .sp-nav-list { list-style: none; }
+  .sp-nav-list li a {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: .28rem .5rem; border-radius: 6px;
+    text-decoration: none; color: var(--text); font-size: .83rem;
+    transition: background .12s;
+  }
+  .sp-nav-list li a:hover { background: var(--accent-light); }
+  .cnt {
+    font-size: .7rem; background: rgba(0,0,0,.07);
+    border-radius: 999px; padding: .05rem .4rem;
+  }
+
+  main { flex: 1; padding: 1.5rem 2rem; max-width: 820px; }
+
+  .page-intro {
+    background: var(--accent-light); border: 1px solid var(--border);
+    border-radius: 10px; padding: 1rem 1.2rem; margin-bottom: 1.8rem;
+    font-size: .88rem; line-height: 1.6; color: var(--muted);
+  }
+
+  .section-heading {
+    font-size: .75rem; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--muted); margin: 2rem 0 .8rem;
+    padding-bottom: .4rem; border-bottom: 1px solid var(--border);
+  }
+
+  .sp-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 12px; margin-bottom: 1.2rem; overflow: hidden;
+  }
+  .sp-header {
+    background: var(--accent-light); padding: .9rem 1.2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .sp-name { font-size: 1.05rem; font-weight: 700; color: var(--text); }
+  .sp-sci { font-size: .8rem; color: var(--muted); font-style: italic; margin-top: .15rem; }
+  .sp-count {
+    font-size: .78rem; background: var(--accent);
+    color: white; border-radius: 999px; padding: .2rem .7rem;
+    white-space: nowrap;
+  }
+  .sp-body { padding: 1rem 1.2rem; }
+  .section-label {
+    font-size: .72rem; text-transform: uppercase; letter-spacing: .07em;
+    color: var(--muted); margin: .9rem 0 .4rem;
+  }
+  .section-label:first-child { margin-top: 0; }
+  .note-list {
+    list-style: none; display: flex; flex-direction: column; gap: .45rem;
+  }
+  .note-list li {
+    background: #f9f5ed; border-left: 3px solid var(--accent);
+    padding: .45rem .8rem; border-radius: 0 6px 6px 0;
+    font-size: .9rem; line-height: 1.55;
+  }
+  .source-links { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .source-links a {
+    font-size: .78rem; color: var(--accent);
+    background: var(--accent-light); border: 1px solid var(--border);
+    border-radius: 999px; padding: .2rem .65rem;
+    text-decoration: none; transition: background .12s;
+  }
+  .source-links a:hover { background: #ffe999; }
+  .no-notes .sp-header { background: #f7f4ef; }
+  .no-data { font-size: .85rem; color: var(--muted); font-style: italic; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🔍 台灣蟬辨識指南</h1>
+    <div class="subtitle">來自社團專家留言的實地辨識特徵</div>
+  </div>
+  <nav class="header-nav">
+    <a href="index.html">野外觀察紀錄</a>
+    <a href="species.html">物種圖鑑</a>
+    <a href="id_guide.html" class="active">辨識指南</a>
+  </nav>
+</header>
+
+<div class="layout">
+<aside>
+  <h3>有辨識資料（15 種）</h3>
+  <ul class="sp-nav-list"><li><a href="#台灣騷蟬">台灣騷蟬<span class="cnt">25</span></a></li>
+<li><a href="#高砂熊蟬">高砂熊蟬<span class="cnt">16</span></a></li>
+<li><a href="#台灣姬蟬">台灣姬蟬<span class="cnt">15</span></a></li>
+<li><a href="#暮蟬屬">暮蟬屬<span class="cnt">11</span></a></li>
+<li><a href="#小蟪蛄">小蟪蛄<span class="cnt">10</span></a></li>
+<li><a href="#薄翅蟬">薄翅蟬<span class="cnt">10</span></a></li>
+<li><a href="#台灣熊蟬">台灣熊蟬<span class="cnt">8</span></a></li>
+<li><a href="#端黑蟬">端黑蟬<span class="cnt">8</span></a></li>
+<li><a href="#細蟬">細蟬<span class="cnt">8</span></a></li>
+<li><a href="#姬春蟬屬">姬春蟬屬<span class="cnt">7</span></a></li>
+<li><a href="#可禮大蟬">可禮大蟬<span class="cnt">6</span></a></li>
+<li><a href="#紋翅暮蟬">紋翅暮蟬<span class="cnt">6</span></a></li>
+<li><a href="#黑翅草蟬">黑翅草蟬<span class="cnt">4</span></a></li>
+<li><a href="#蟪蛄">蟪蛄<span class="cnt">3</span></a></li>
+<li><a href="#台灣暗蟬">台灣暗蟬<span class="cnt">1</span></a></li></ul>
+  <h3>其他物種（21 種）</h3>
+  <ul class="sp-nav-list"><li><a href="#陽明山暮蟬">陽明山暮蟬<span class="cnt">8</span></a></li>
+<li><a href="#草蟬">草蟬<span class="cnt">5</span></a></li>
+<li><a href="#寒蟬屬">寒蟬屬<span class="cnt">4</span></a></li>
+<li><a href="#大坪暮蟬">大坪暮蟬<span class="cnt">3</span></a></li>
+<li><a href="#渡邊幽蟬">渡邊幽蟬<span class="cnt">3</span></a></li>
+<li><a href="#紅脈熊蟬">紅脈熊蟬<span class="cnt">3</span></a></li>
+<li><a href="#岩崎寒蟬">岩崎寒蟬<span class="cnt">2</span></a></li>
+<li><a href="#熊蟬屬">熊蟬屬<span class="cnt">2</span></a></li>
+<li><a href="#青面姬春蟬">青面姬春蟬<span class="cnt">2</span></a></li>
+<li><a href="#鱉甲暮蟬">鱉甲暮蟬<span class="cnt">2</span></a></li>
+<li><a href="#北埔姬春蟬">北埔姬春蟬<span class="cnt">1</span></a></li>
+<li><a href="#台灣爺蟬">台灣爺蟬<span class="cnt">1</span></a></li>
+<li><a href="#台灣虎翅蟬">台灣虎翅蟬<span class="cnt">1</span></a></li>
+<li><a href="#太平姬春蟬">太平姬春蟬<span class="cnt">1</span></a></li>
+<li><a href="#小暮蟬">小暮蟬<span class="cnt">1</span></a></li>
+<li><a href="#蓬萊大蟬">蓬萊大蟬<span class="cnt">1</span></a></li>
+<li><a href="#蝦夷蟬屬">蝦夷蟬屬<span class="cnt">1</span></a></li>
+<li><a href="#蟪蛄屬">蟪蛄屬<span class="cnt">1</span></a></li>
+<li><a href="#高士佛姬春蟬">高士佛姬春蟬<span class="cnt">1</span></a></li>
+<li><a href="#高山姬春蟬">高山姬春蟬<span class="cnt">1</span></a></li>
+<li><a href="#黃蟪蛄">黃蟪蛄<span class="cnt">1</span></a></li></ul>
+</aside>
+
+<main>
+  <div class="page-intro">
+    以下辨識特徵均擷取自<strong>台灣蟬保育學會 Facebook 社團</strong>貼文留言，
+    為 Yasumasa Saisho、Yao Meng Hsieh、吳文彬、劉樂山、陳振祥等專家的實地判斷，非教科書文獻。
+    鑑定蟬類最可靠的方式仍是<strong>聲音＋棲地＋照片請專家確認</strong>。
+  </div>
+
+  <h2 class="section-heading">有明確辨識特徵的物種</h2>
+  
+<section class="sp-card" id="台灣騷蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">台灣騷蟬</h2>
+      <div class="sp-sci">Pomponia linearis</div>
+    </div>
+    <span class="sp-count">25 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <h3 class="section-label">辨識要點</h3>
+    <ul class="note-list"><li><strong>額唇基顏色</strong>是鑑定關鍵（劉樂山據此確認）</li>
+<li>聲音：「森林最聒噪的聲音」（Yao Meng Hsieh）</li></ul>
+    <h3 class="section-label">貼文來源</h3>
+    <div class="source-links"><a href="https://www.facebook.com/groups/498975763500965/posts/9772742566124192" target="_blank" rel="noopener">額唇基判斷（劉樂山）</a>
+<a href="https://www.facebook.com/groups/498975763500965/posts/9905622002836247" target="_blank" rel="noopener">聲音描述（Yao）</a></div>
+  </div>
+</section>
+
+<section class="sp-card" id="高砂熊蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">高砂熊蟬</h2>
+      <div class="sp-sci">Cryptotympana holsti</div>
+    </div>
+    <span class="sp-count">16 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <h3 class="section-label">辨識要點</h3>
+    <ul class="note-list"><li>外側粗翅脈偏<strong>綠色</strong>（與紅脈熊蟬主要外觀差異）</li>
+<li>羽化期間色彩難與紅脈熊蟬區分，需特別注意</li></ul>
+    <h3 class="section-label">貼文來源</h3>
+    <div class="source-links"><a href="https://www.facebook.com/groups/498975763500965/posts/7770903556308113" target="_blank" rel="noopener">翅脈顏色鑑定</a>
+<a href="https://www.facebook.com/groups/498975763500965/posts/27053421717629675" target="_blank" rel="noopener">羽化個體難辨（Yasumasa）</a></div>
+  </div>
+</section>
+
+<section class="sp-card" id="台灣姬蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">台灣姬蟬</h2>
+      <div class="sp-sci">Sulphogaeana sulphurea</div>
+    </div>
+    <span class="sp-count">15 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <h3 class="section-label">辨識要點</h3>
+    <ul class="note-list"><li>關鍵特徵：<strong>胸背板紋路</strong>和<strong>翅脈紋路</strong>（劉樂山：看不到就很難認）</li>
+<li>易與<strong>細蟬</strong>混淆，需搭配棲地與體型判斷</li></ul>
+    <h3 class="section-label">貼文來源</h3>
+    <div class="source-links"><a href="https://www.facebook.com/groups/498975763500965/posts/9778774888854293" target="_blank" rel="noopener">胸背板翅脈是關鍵（劉樂山）</a></div>
+  </div>
+</section>
+
+<section class="sp-card" id="暮蟬屬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">暮蟬屬</h2>
+      <div class="sp-sci">Tanna spp.</div>
+    </div>
+    <span class="sp-count">11 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <h3 class="section-label">辨識要點</h3>
+    <ul class="note-list"><li>胸背板有屬級特徵，但<strong>種間難辨</strong></li>
+<li>翅脈判斷：紋路需夠粗、夠連續（劉樂山用以排除非暮蟬屬）</li>
+<li>種間分辨主要靠<strong>產地</strong>和<strong>鳴聲</strong></li>
+<li><strong>紋翅暮蟬</strong>和阿里山紋翅暮蟬在屬內相對好辨認</li>
+<li><strong>小暮蟬</strong>：叫聲特別，白天才叫（「要確認是小暮蟬必須等他白天開始叫」－劉樂山）</li></ul>
+    <h3 class="section-label">貼文來源</h3>
+    <div class="source-links"><a href="https://www.facebook.com/groups/498975763500965/posts/7796358170429318" target="_blank" rel="noopener">翅脈判斷（劉樂山）</a>
+<a href="https://www.facebook.com/groups/498975763500965/posts/7786894864708982" target="_blank" rel="noopener">產地＋鳴聲是關鍵（Yao）</a>
+<a href="https://www.facebook.com/groups/498975763500965/posts/26884130401225475" target="_blank" rel="noopener">小暮蟬叫聲特別（劉樂山）</a></div>
+  </div>
+</section>
+
+<section class="sp-card" id="小蟪蛄">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">小蟪蛄</h2>
+      <div class="sp-sci">Platypleura takasagona</div>
+    </div>
+    <span class="sp-count">10 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <h3 class="section-label">辨識要點</h3>
+    <ul class="note-list"><li>翅膀<strong>透明部分稍多</strong></li>
+<li>內側翅緣有明顯<strong>三角形紋路</strong>（劉樂山）</li></ul>
+    <h3 class="section-label">貼文來源</h3>
+    <div class="source-links"><a href="https://www.facebook.com/groups/498975763500965/posts/10095708607160918" target="_blank" rel="noopener">翅膀特徵（劉樂山）</a></div>
+  </div>
+</section>
+
+<section class="sp-card" id="薄翅蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">薄翅蟬</h2>
+      <div class="sp-sci">Chremistica ochracea</div>
+    </div>
+    <span class="sp-count">10 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <h3 class="section-label">辨識要點</h3>
+    <ul class="note-list"><li>顏色隨<strong>日齡變化</strong>：剛羽化綠色 → 最後轉橘紅色（王宏進）</li>
+<li>社團內爭論：是否有固定的綠色型與褐色型（非單純日齡差異），尚無定論</li>
+<li>另有<strong>橘色型</strong>個體</li></ul>
+    <h3 class="section-label">貼文來源</h3>
+    <div class="source-links"><a href="https://www.facebook.com/groups/498975763500965/posts/7943641715700962" target="_blank" rel="noopener">日齡顏色變化（王宏進）</a>
+<a href="https://www.facebook.com/groups/498975763500965/posts/23912288605076351" target="_blank" rel="noopener">日齡說（黃麟傑）</a>
+<a href="https://www.facebook.com/groups/498975763500965/posts/7803732779691857" target="_blank" rel="noopener">橘色型（薛永志）</a></div>
+  </div>
+</section>
+
+<section class="sp-card" id="台灣熊蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">台灣熊蟬</h2>
+      <div class="sp-sci">Cryptotympana takasagona</div>
+    </div>
+    <span class="sp-count">8 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <h3 class="section-label">辨識要點</h3>
+    <ul class="note-list"><li><strong>蟬蛻特別黑</strong>（吳文彬根據蟬蛻顏色判斷）</li></ul>
+    <h3 class="section-label">貼文來源</h3>
+    <div class="source-links"><a href="https://www.facebook.com/groups/498975763500965/posts/9996856717046108" target="_blank" rel="noopener">蟬蛻鑑定</a></div>
+  </div>
+</section>
+
+<section class="sp-card" id="端黑蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">端黑蟬</h2>
+      <div class="sp-sci">Becquartina electa</div>
+    </div>
+    <span class="sp-count">8 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <h3 class="section-label">辨識要點</h3>
+    <ul class="note-list"><li>蟬蛻顏色<strong>褐色</strong>→ 可排除暮蟬屬（Yasumasa）</li>
+<li>羽化時體色多變：從<strong>綠色到橙色</strong>均有</li>
+<li>罕見<strong>藍綠色變異</strong>（劉樂山：蟬的藍綠色變異不常見）</li>
+<li>體型比熊蟬屬<strong>小很多</strong></li>
+<li><strong>陽明山</strong>是台灣最容易拍到的地點</li></ul>
+    <h3 class="section-label">貼文來源</h3>
+    <div class="source-links"><a href="https://www.facebook.com/groups/498975763500965/posts/9887225464675901" target="_blank" rel="noopener">蟬蛻褐色排除暮蟬屬（Yasumasa）</a>
+<a href="https://www.facebook.com/groups/498975763500965/posts/9964972650234515" target="_blank" rel="noopener">橙色型</a>
+<a href="https://www.facebook.com/groups/498975763500965/posts/23933790039592874" target="_blank" rel="noopener">藍綠色變異（劉樂山）</a>
+<a href="https://www.facebook.com/groups/498975763500965/posts/7663016297096840" target="_blank" rel="noopener">陽明山最易拍（劉樂山）</a></div>
+  </div>
+</section>
+
+<section class="sp-card" id="細蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">細蟬</h2>
+      <div class="sp-sci">Leptopsaltria yamashiroana</div>
+    </div>
+    <span class="sp-count">8 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <h3 class="section-label">辨識要點</h3>
+    <ul class="note-list"><li><strong>體型</strong>比暮蟬屬、騷蟬屬小（Yao 據體型排除陽明山暮蟬）</li>
+<li>棲地：<strong>低海拔山區</strong>即有，分布廣</li>
+<li>易與台灣姬蟬混淆</li></ul>
+    <h3 class="section-label">貼文來源</h3>
+    <div class="source-links"><a href="https://www.facebook.com/groups/498975763500965/posts/9917618984969882" target="_blank" rel="noopener">體型判斷（Yao）</a>
+<a href="https://www.facebook.com/groups/498975763500965/posts/7641563325908804" target="_blank" rel="noopener">低海拔分布（陳振祥）</a></div>
+  </div>
+</section>
+
+<section class="sp-card" id="姬春蟬屬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">姬春蟬屬</h2>
+      <div class="sp-sci">Euterpnosia spp.</div>
+    </div>
+    <span class="sp-count">7 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <h3 class="section-label">辨識要點</h3>
+    <ul class="note-list"><li>蟬蛻：<strong>觸角第 4 節較大</strong>為屬級特徵（Yasumasa）</li>
+<li>成蟲：翅膀上的<strong>斑點少</strong>（劉樂山用以與其他屬區分）</li>
+<li>種間分辨需靠<strong>鳴聲</strong>（劉樂山：「有鳴聲會更好辨認」）</li></ul>
+    <h3 class="section-label">貼文來源</h3>
+    <div class="source-links"><a href="https://www.facebook.com/groups/498975763500965/posts/27029290606709453" target="_blank" rel="noopener">蟬蛻觸角第4節（Yasumasa）</a>
+<a href="https://www.facebook.com/groups/498975763500965/posts/10041377075927405" target="_blank" rel="noopener">翅膀斑點少（劉樂山）</a></div>
+  </div>
+</section>
+
+<section class="sp-card" id="可禮大蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">可禮大蟬</h2>
+      <div class="sp-sci">Platylomia pieli</div>
+    </div>
+    <span class="sp-count">6 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <h3 class="section-label">辨識要點</h3>
+    <ul class="note-list"><li>蟬蛻鑑定：需檢查<strong>觸角或前腳的齒</strong>（Yasumasa：一般從脫殼鑑定蟬的種名相當困難）</li>
+<li>棲地：中高海拔，如鳶嘴山約 2000m、阿里山氣候帶</li>
+<li>叫聲與<strong>蓬萊大蟬</strong>相似，易混淆</li></ul>
+    <h3 class="section-label">貼文來源</h3>
+    <div class="source-links"><a href="https://www.facebook.com/groups/498975763500965/posts/24484074327897773" target="_blank" rel="noopener">蟬蛻觸角/前腳特徵（Yasumasa）</a>
+<a href="https://www.facebook.com/groups/498975763500965/posts/24579393001699238" target="_blank" rel="noopener">海拔分布（吳明勳）</a></div>
+  </div>
+</section>
+
+<section class="sp-card" id="紋翅暮蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">紋翅暮蟬</h2>
+      <div class="sp-sci">Tanna viridis</div>
+    </div>
+    <span class="sp-count">6 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <h3 class="section-label">辨識要點</h3>
+    <ul class="note-list"><li>在暮蟬屬中<strong>相對好辨認</strong></li>
+<li>棲地：中海拔，天剛黑時鳴叫；偶有趨光個體</li>
+<li>數量不多，需在生態較好的山區才有機會遇見</li></ul>
+    <h3 class="section-label">貼文來源</h3>
+    <div class="source-links"><a href="https://www.facebook.com/groups/498975763500965/posts/9988849427846837" target="_blank" rel="noopener">棲地行為（劉樂山）</a></div>
+  </div>
+</section>
+
+<section class="sp-card" id="黑翅草蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">黑翅草蟬</h2>
+      <div class="sp-sci">Mogannia formosana</div>
+    </div>
+    <span class="sp-count">4 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <h3 class="section-label">辨識要點</h3>
+    <ul class="note-list"><li>蟬蛻：<strong>腹節黑色</strong>（Yasumasa：姬春蟬屬腹節不會這麼黑，可排除）</li>
+<li>陽明山紗帽山附近有穩定族群</li></ul>
+    <h3 class="section-label">貼文來源</h3>
+    <div class="source-links"><a href="https://www.facebook.com/groups/498975763500965/posts/9824088967656218" target="_blank" rel="noopener">蟬蛻腹節鑑定（Yasumasa）</a></div>
+  </div>
+</section>
+
+<section class="sp-card" id="蟪蛄">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">蟪蛄</h2>
+      <div class="sp-sci">Platypleura kaempferi</div>
+    </div>
+    <span class="sp-count">3 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <h3 class="section-label">辨識要點</h3>
+    <ul class="note-list"><li>1–4 月拍到的個體較可能是<strong>長毛蟪蛄</strong>（劉樂山）</li></ul>
+    <h3 class="section-label">貼文來源</h3>
+    <div class="source-links"><a href="https://www.facebook.com/groups/498975763500965/posts/9837109873020794" target="_blank" rel="noopener">季節鑑別（劉樂山）</a></div>
+  </div>
+</section>
+
+<section class="sp-card" id="台灣暗蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">台灣暗蟬</h2>
+      <div class="sp-sci">Cryptotympana sp.</div>
+    </div>
+    <span class="sp-count">1 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <h3 class="section-label">辨識要點</h3>
+    <ul class="note-list"><li>俗稱「<strong>結咧蟬</strong>」，叫聲「結咧 結咧」</li>
+<li>歷史分布：雲林大埤、嘉義溪口、大林一帶，農藥普遍使用後數量銳減</li></ul>
+    <h3 class="section-label">貼文來源</h3>
+    <div class="source-links"><a href="https://www.facebook.com/groups/498975763500965/posts/26843243838647465" target="_blank" rel="noopener">叫聲記述（Red-Jen Liu）</a></div>
+  </div>
+</section>
+
+  <h2 class="section-heading">其他物種（社團中尚無明確辨識討論）</h2>
+  
+<section class="sp-card no-notes" id="陽明山暮蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">陽明山暮蟬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">8 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="草蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">草蟬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">5 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="寒蟬屬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">寒蟬屬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">4 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="大坪暮蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">大坪暮蟬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">3 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="渡邊幽蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">渡邊幽蟬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">3 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="紅脈熊蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">紅脈熊蟬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">3 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="岩崎寒蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">岩崎寒蟬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">2 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="熊蟬屬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">熊蟬屬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">2 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="青面姬春蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">青面姬春蟬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">2 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="鱉甲暮蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">鱉甲暮蟬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">2 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="北埔姬春蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">北埔姬春蟬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">1 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="台灣爺蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">台灣爺蟬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">1 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="台灣虎翅蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">台灣虎翅蟬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">1 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="太平姬春蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">太平姬春蟬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">1 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="小暮蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">小暮蟬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">1 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="蓬萊大蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">蓬萊大蟬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">1 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="蝦夷蟬屬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">蝦夷蟬屬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">1 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="蟪蛄屬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">蟪蛄屬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">1 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="高士佛姬春蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">高士佛姬春蟬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">1 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="高山姬春蟬">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">高山姬春蟬</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">1 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+
+<section class="sp-card no-notes" id="黃蟪蛄">
+  <div class="sp-header">
+    <div>
+      <h2 class="sp-name">黃蟪蛄</h2>
+      <div class="sp-sci"></div>
+    </div>
+    <span class="sp-count">1 筆觀察</span>
+  </div>
+  <div class="sp-body">
+    <p class="no-data">社團貼文中尚無明確辨識特徵的討論。</p>
+  </div>
+</section>
+</main>
+</div>
+
+</body>
+</html>
